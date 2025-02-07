@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+<style>
+  body {
+    background: linear-gradient(
+      90deg,
+      rgba(2, 0, 36, 1) 0%,
+      rgba(1, 123, 163, 1) 100%
+    );
+    font-family: Arial, sans-serif;
+    margin: 0;
+    color: white;
+    padding-top: 80px;
+  }
+
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: linear-gradient(
+      90deg,
+      rgba(2, 0, 36, 1) 0%,
+      rgba(1, 123, 163, 1) 100%
+    );
+    padding: 10px 20px;
+    opacity: 0;
+    animation: fadeIn 1s ease-in-out forwards;
+  }
+
+  .navbar-brand img {
+    width: 80px;
+    height: auto;
+  }
+
+  .navbar-nav {
+    gap: 40px;
+  }
+
+  section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+  }
+
+  .about-content {
+    display: flex;
+    align-items: center;
+    text-align: center;
+  }
+
+  .about-content img {
+        width: 200px;
+        border-radius: 10px;
+        opacity: 0;
+        transform: translateX(-50px);
+        animation: slideInLeft 1s ease-in-out 0.5s forwards;
+      }
+
+  .about-text {
+    opacity: 0;
+    transform: translateX(50px);
+    animation: slideInRight 1s ease-in-out 0.7s forwards;
+  }
+
+  .services {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    background: linear-gradient(
+      90deg,
+      rgba(2, 0, 36, 1) 0%,
+      rgba(1, 123, 163, 1) 100%
+    );
+    border-color: white;
+    color: white;
+    border-radius: 10px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.5s ease-in-out;
+  }
+
+  .card:nth-child(1) {
+    animation: fadeInScale 1s ease-in-out 0.5s forwards;
+  }
+  .card:nth-child(2) {
+    animation: fadeInScale 1s ease-in-out 0.7s forwards;
+  }
+  .card:nth-child(3) {
+    animation: fadeInScale 1s ease-in-out 0.9s forwards;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  }
+
+  @media (min-width: 768px) {
+    .about-content {
+      flex-direction: row;
+      text-align: left;
+    }
+    .about-text {
+      padding-left: 30px;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="../imgs/logo.png" alt="Logo" />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div
+          class="collapse navbar-collapse justify-content-end"
+          id="navbarNav"
+        >
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link text-white" href="home.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="problems.html">Problems</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="report.html">Report</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="profile.html">Profile</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <hr style="margin-top: -5px" class="text-white w-100" />
+    <section id="about">
+      <div class="container">
+        <h2 class="text-center mb-4">About Us</h2>
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center">
+            <img src="../imgs/road.png" alt="About Image" class="img-fluid" />
+          </div>
+          <div class="col-md-6 about-text">
+            <p>
+              Namma Uyir - Community Reporting for Safer Roads
+              Namma Uyir connects citizens and authorities to improve road safety through real-time, community-driven reporting. Our platform allows users to report hazards like potholes, broken traffic lights, and illegal parking with geotagged images, track updates, and receive notifications. Featuring an interactive map, admin dashboard, and community voting, we ensure critical issues get priority attention. Together, we make roads safer—one report at a time! 
+          </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="container text-center">
+        <h2 class="mb-4">Our Services</h2>
+        <div class="row services">
+          <div class="col-md-4">
+            <div class="card p-3">
+              <i class="fas fa-laptop fa-3x my-3"></i>
+              <h5>Real-Time Hazard Reporting</h5>
+              <p>Easily report road hazards with descriptions, photos, and geotagged locations using an interactive map.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3">
+              <i class="fas fa-mobile-alt fa-3x my-3"></i>
+              <h5>Community Engagement</h5>
+              <p>
+                Upvote critical issues to prioritize repairs and receive notifications on updates, making road safety a collective effort.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3">
+              <i class="fas fa-chart-line fa-3x my-3"></i>
+              <h5>Instant Alerts</h5>
+              <p>Get real-time notifications when a reported issue is updated or resolved.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

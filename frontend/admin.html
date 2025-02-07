@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .location-card {
+      width: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      background: white;
+      transition: transform 0.3s;
+    }
+    .location-card:hover {
+      transform: scale(1.02);
+    }
+    .location-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .location-card .card-body {
+      padding: 15px;
+    }
+    .btn-completed {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      background-color: #28a745;
+      color: white;
+    }
+    .votes-badge {
+      background-color: #ffc107;
+      color: black;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    #loading {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center my-4">Admin - Reported Locations</h2>
+    <div id="loading">Loading locations...</div>
+    <div id="cardContainer" class="card-container"></div>
+  </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const fetchAndRenderLocations = async () => {
+      const loading = document.getElementById("loading");
+      try {
+        const response = await fetch("http://localhost:5000/locations");
+        const locations = await response.json();
+
+        loading.style.display = "none"; // Hide loading text
+
+        if (Array.isArray(locations) && locations.length > 0) {
+          locations.sort((a, b) => b.votes - a.votes);
+          const cardContainer = document.getElementById("cardContainer");
+          cardContainer.innerHTML = "";
+
+          locations.forEach((location) => {
+            const userName = location.name || "Unknown";
+            const userEmail = location.email || "Not Available";
+            const locationURL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.location)}`;
+
+            const card = document.createElement("div");
+            card.className = "location-card card";
+            card.innerHTML = `
+              <div class="card-body">
+                <h6><strong>Name:</strong> ${userName}</h6>
+                <h6><strong>Email:</strong> ${userEmail}</h6>
+              </div>
+              <img src="http://localhost:5000/uploads/${location.imagePath}" alt="${location.district}">
+              <div class="card-body">
+                <h5 class="card-title">${location.district}</h5>
+                <p><strong>Road Name:</strong> ${location.roadName}</p>
+                <p><strong>Location:</strong> <a href="${locationURL}" target="_blank">${location.location}</a></p>
+                <p><strong>Problem:</strong> ${location.problem}</p>
+                <p><strong>Surrounding Problems:</strong> ${location.surroundingProblems}</p>
+                <p><strong>Votes:</strong> <span class="votes-badge">${location.votes}</span></p>
+                <button class="btn btn-success btn-completed" data-id="${location._id}" data-email="${userEmail}">Mark as Completed</button>
+              </div>
+            `;
+            cardContainer.appendChild(card);
+
+            // Mark as Completed button
+            card.querySelector(".btn-completed").addEventListener("click", async (e) => {
+              const locationId = e.target.getAttribute("data-id");
+              const userEmail = e.target.getAttribute("data-email");
+
+              try {
+                const response = await fetch(`http://localhost:5000/locations/${locationId}/complete`, {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ email: userEmail }),
+                });
+
+                if (response.ok) {
+                  showToast("Success! Completion email sent.", "success");
+                  e.target.closest(".location-card").remove();
+                } else {
+                  showToast("Failed to mark as completed.", "danger");
+                }
+              } catch (error) {
+                console.error("Error marking as completed:", error);
+                showToast("An error occurred.", "danger");
+              }
+            });
+          });
+        } else {
+          document.getElementById("cardContainer").innerHTML = '<p class="text-center">No locations reported yet.</p>';
+        }
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+        loading.style.display = "none";
+        document.getElementById("cardContainer").innerHTML = '<p class="text-center text-danger">Failed to load location details. Please try again later.</p>';
+      }
+    };
+
+    // Toast Notification Function
+    function showToast(message, type) {
+      const toast = document.createElement("div");
+      toast.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+      toast.style.zIndex = "1050";
+      toast.innerHTML = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    await fetchAndRenderLocations();
+  });
+</script>
+
+</body>
+</html>
