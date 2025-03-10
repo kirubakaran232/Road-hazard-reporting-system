@@ -10,9 +10,7 @@ const passport = require("passport");
 const bodyParser = require("body-parser");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const session = require("express-session");
-// const { text } = require("body-parser");
 
-// Initialize Express app
 const app = express();
 const PORT = 5000;
 
@@ -27,7 +25,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "login.html"));
 });
 
-// Connect to MongoDB
 mongoose.connect("mongodb://localhost:27017/location", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -47,11 +44,9 @@ app.use(
   })
 );
 
-// Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Google OAuth Strategy
 passport.use(
   new GoogleStrategy(
     {
@@ -60,13 +55,11 @@ passport.use(
       callbackURL: "http://localhost:5000/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
-      // Here, you can store user info in the database if needed
       return done(null, profile);
     }
   )
 );
 
-// Serialize and Deserialize User
 passport.serializeUser((user, done) => {
   done(null, user);
 });
@@ -74,7 +67,6 @@ passport.deserializeUser((user, done) => {
   done(null, user);
 });
 
-// Google Auth Routes
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -86,10 +78,8 @@ app.get(
     failureRedirect: "http://localhost:5000/login.html",
   }),
   (req, res) => {
-    // Store user details in session
     req.session.user = req.user;
 
-    // Redirect to frontend with user details
     res.redirect(
       `http://localhost:5000/home.html?email=${req.user.emails[0].value}&name=${req.user.displayName}`
     );
@@ -97,7 +87,6 @@ app.get(
 );
 
 
-// Logout route
 app.get("/logout", (req, res) => {
   req.logout(() => {
     res.redirect("http://localhost:5000/login.html");
@@ -105,9 +94,8 @@ app.get("/logout", (req, res) => {
 });
 
 
-// Define the schema and model
 const locationSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // Store user's full name
+  name: { type: String, required: true }, 
   email: { type: String, required: true },
   district: { type: String, required: true },
   roadName: { type: String, required: true },
@@ -122,14 +110,13 @@ const locationSchema = new mongoose.Schema({
     enum: ["Accident", "RoadIssue", "Other"],
     required: true,
   },
-  votes: { type: Number, default: 0 }, // Add votes field
+  votes: { type: Number, default: 0 }, 
 });
 
 const Location = mongoose.model("Location", locationSchema);
 
-// Haversine formula for distance calculation
 const haversineDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371; // Earth radius in km
+  const R = 6371; 
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
@@ -138,10 +125,9 @@ const haversineDistance = (lat1, lon1, lat2, lon2) => {
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 1000; // Distance in meters
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 1000; 
 };
 
-// Multer configuration for file uploads
 const upload = multer({
   storage: multer.diskStorage({
     destination: "uploads/",
@@ -158,7 +144,6 @@ const upload = multer({
   },
 });
 
-// User Schema and Model
 const userSchema = new mongoose.Schema({
   full_name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -169,7 +154,6 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 
 
-// Route: Sign Up
 app.post("/signup", async (req, res) => {
   const { full_name, email, phone_number, password } = req.body;
 
@@ -202,7 +186,6 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-// Login Route
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -246,9 +229,8 @@ app.post("/location", upload.single("image"), async (req, res) => {
     } = req.body;
     const imagePath = req.file ? req.file.filename : null;
 
-    // Ensure email is a string (take the first email if it's an array)
     if (Array.isArray(email)) {
-      email = email[0]; // Take the first email in the array
+      email = email[0]; 
     }
 
     if (!email) return res.status(400).json({ error: "User email required" });
@@ -263,7 +245,7 @@ app.post("/location", upload.single("image"), async (req, res) => {
 
     const newLocation = new Location({
       name: user.full_name,
-      email, // Now email is a valid string
+      email, 
       district,
       roadName,
       location,
@@ -295,7 +277,6 @@ app.post("/location", upload.single("image"), async (req, res) => {
 
 
 
-// Route to fetch all locations
 app.get("/locations", async (req, res) => {
   try {
     const locations = await Location.find({});
@@ -315,7 +296,7 @@ app.get("/locations", async (req, res) => {
 });
 
 
-// Route to vote on a location
+// vote on a location
 app.patch("/locations/:id/vote", async (req, res) => {
   const { id } = req.params;
 
@@ -337,7 +318,7 @@ app.patch("/locations/:id/vote", async (req, res) => {
   }
 });
 
-// Route to delete a location
+// delete a location
 app.delete("/locations/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -354,7 +335,7 @@ app.delete("/locations/:id", async (req, res) => {
   }
 });
 
-// Admin Login Route
+// Admin Login 
 app.post("/admin-login", (req, res) => {
   const { email, password } = req.body;
 
@@ -365,12 +346,11 @@ app.post("/admin-login", (req, res) => {
   }
 });
 
-// Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/profile/:email", async (req, res) => {
   try {
-    const email = req.params.email.toLowerCase(); // Ensure case-insensitive match
+    const email = req.params.email.toLowerCase(); 
     const user = await User.findOne({ email });
 
     if (user) {
@@ -387,7 +367,6 @@ app.get("/profile/:email", async (req, res) => {
   }
 });
 
-// Fetch user report stats
 app.get("/user-reports/:email", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
@@ -399,7 +378,6 @@ app.get("/user-reports/:email", async (req, res) => {
   }
 });
 
-// Fetch all reports
 app.get("/locations", async (req, res) => {
   try {
     const reports = await Report.find({ status: "pending" });
@@ -430,7 +408,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// API to mark a location as completed
 app.patch("/locations/:id/complete", async (req, res) => {
   const { id } = req.params;
   const { email } = req.body;
@@ -441,7 +418,6 @@ app.patch("/locations/:id/complete", async (req, res) => {
       return res.status(404).json({ error: "Location not found" });
     }
 
-    // Send Email
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -455,7 +431,6 @@ app.patch("/locations/:id/complete", async (req, res) => {
         return res.status(500).json({ error: "Failed to send email" });
       }
 
-      // Delete from database after email is sent
       await Location.findByIdAndDelete(id);
       res
         .status(200)
@@ -467,17 +442,6 @@ app.patch("/locations/:id/complete", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
-
